@@ -1,0 +1,6 @@
+@CloudGamesApi_HostAddress = http://localhost:5144
+
+GET {{CloudGamesApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
