@@ -7,6 +7,6 @@ public class User : EntityBase
     public required string Password  { get; set; }
     public required string Permission  { get; set; }
     
-    public ICollection<Game> Games { get; set; }
+    public ICollection<Order> Orders { get; set; }
     
 }

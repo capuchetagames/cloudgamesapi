@@ -25,6 +25,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Entity.Game", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INT");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
@@ -51,9 +52,36 @@ namespace Infrastructure.Migrations
                     b.ToTable("Games", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entity.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INT");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("DATETIME");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("INT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entity.User", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INT");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
@@ -82,56 +110,16 @@ namespace Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entity.UserLibrary", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("INT");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("DATETIME");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("INT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UsersLibrary", (string)null);
-                });
-
-            modelBuilder.Entity("GameUser", b =>
-                {
-                    b.Property<int>("GamesId")
-                        .HasColumnType("INT");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("INT");
-
-                    b.HasKey("GamesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("GameUser");
-                });
-
-            modelBuilder.Entity("Core.Entity.UserLibrary", b =>
+            modelBuilder.Entity("Core.Entity.Order", b =>
                 {
                     b.HasOne("Core.Entity.Game", "Game")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.Entity.User", "User")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -141,19 +129,14 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GameUser", b =>
+            modelBuilder.Entity("Core.Entity.Game", b =>
                 {
-                    b.HasOne("Core.Entity.Game", null)
-                        .WithMany()
-                        .HasForeignKey("GamesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Orders");
+                });
 
-                    b.HasOne("Core.Entity.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            modelBuilder.Entity("Core.Entity.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }
