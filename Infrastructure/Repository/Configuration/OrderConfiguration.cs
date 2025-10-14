@@ -4,20 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Repository.Configuration;
 
-public class UserLibraryConfiguration : IEntityTypeConfiguration<UserLibrary>
+public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
-    public void Configure(EntityTypeBuilder<UserLibrary> builder)
+    public void Configure(EntityTypeBuilder<Order> builder)
     {
-        builder.ToTable("UsersLibrary");
+        builder.ToTable("Orders");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnType("INT").ValueGeneratedNever().UseMySqlIdentityColumn();
+        builder.Property(x => x.Id).HasColumnType("INT").UseMySqlIdentityColumn();
         builder.Property(x=>x.UserId).HasColumnType("INT").IsRequired();
         builder.Property(x=>x.GameId).HasColumnType("INT").IsRequired();
         builder.Property(x=> x.CreatedAt).HasColumnType("DATETIME").IsRequired();
         
-        builder.HasOne(u=>u.User).WithMany().HasPrincipalKey(u=>u.Id);
-        
-        builder.HasOne(u=>u.Game).WithMany().HasPrincipalKey(u=>u.Id);
+        builder.HasOne(u=>u.User).WithMany(u=>u.Orders).HasPrincipalKey(u=>u.Id);
+        builder.HasOne(g=>g.Game).WithMany(g=>g.Orders).HasPrincipalKey(g=>g.Id);
         
     }
 }

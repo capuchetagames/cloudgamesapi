@@ -6,8 +6,8 @@ namespace Infrastructure.Repository;
 
 public class ApplicationDbContext : DbContext
 {
-    //private string _connectionString = "server=localhost;database=cloudgames;user=root;password=rooot123";
-    private string _connectionString;
+    private string _connectionString = "server=localhost;database=cloudgames;user=root;password=rooot123";
+    //private string _connectionString;
 
     public ApplicationDbContext()
     {
@@ -28,7 +28,7 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<Game> Games { get; set; }
     
-    public DbSet<UserLibrary> UserLibrary { get; set; }
+    public DbSet<Order> UserLibrary { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
