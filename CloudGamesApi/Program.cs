@@ -1,8 +1,23 @@
 using CloudGamesApi.Configs;
+using Core.Repository;
+using Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json").Build();
+
+var connectionString = configuration.GetConnectionString("ConnectionString");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+},ServiceLifetime.Scoped);
+
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
