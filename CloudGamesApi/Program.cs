@@ -1,4 +1,5 @@
 using CloudGamesApi.Configs;
+using CloudGamesApi.Middlewares;
 using Core.Repository;
 using Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseLogMiddleware();
 
 app.UseAuthorization();
 
