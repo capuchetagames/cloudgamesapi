@@ -1,6 +1,8 @@
+using Core;
 using Core.Dtos;
 using Core.Entity;
 using Core.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudGamesApi.Controllers;
@@ -17,6 +19,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet] 
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Get()
     {
         try
@@ -30,6 +33,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("{id:int}")]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Get([FromRoute] int id)
     {
         try
@@ -56,6 +60,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Post([FromBody] UserDto userDto)
     {
         try
@@ -65,7 +70,7 @@ public class UserController : ControllerBase
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
-                Permission = userDto.Permission,
+                Permission = userDto.Permission.ToLower(),
             };
             _userRepository.Add(user);
             return Ok();
@@ -77,6 +82,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Put([FromBody] UpdateUserDto userDto)
     {
         try
@@ -97,6 +103,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Delete([FromRoute] int id)
     {
         try

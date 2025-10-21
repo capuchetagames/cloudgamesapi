@@ -1,6 +1,8 @@
+using Core;
 using Core.Dtos;
 using Core.Entity;
 using Core.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CloudGamesApi.Controllers;
@@ -15,7 +17,8 @@ public class GamesController : ControllerBase
         _gameRepository = gameRepository;
     }
 
-    [HttpGet] 
+    [HttpGet]
+    [Authorize]
     public IActionResult Get()
     {
         try
@@ -29,6 +32,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize]
     public IActionResult Get([FromRoute] int id)
     {
         try
@@ -42,6 +46,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Post([FromBody] GameDto gameDto)
     {
         try
@@ -63,6 +68,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Put([FromBody] UpdateGameDto gameDto)
     {
         try
@@ -82,6 +88,7 @@ public class GamesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Delete([FromRoute] int id)
     {
         try
