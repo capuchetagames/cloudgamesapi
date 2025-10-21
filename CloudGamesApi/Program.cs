@@ -1,6 +1,8 @@
 using System.Text;
 using CloudGamesApi.Middlewares;
+using CloudGamesApi.Service;
 using Core;
+using Core.Models;
 using Core.Repository;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,6 +23,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddTransient<ICacheService, MemCacheService>();
 
 
 builder.Services.AddControllers();
