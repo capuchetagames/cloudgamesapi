@@ -1,6 +1,7 @@
 using Core;
 using Core.Dtos;
 using Core.Entity;
+using Core.Models;
 using Core.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,11 @@ namespace CloudGamesApi.Controllers;
 public class GamesController : ControllerBase
 {
     private readonly IGameRepository _gameRepository;
-    public GamesController(IGameRepository gameRepository)
+    private readonly ICacheService _cacheService;
+    public GamesController(IGameRepository gameRepository, ICacheService cacheService)
     {
         _gameRepository = gameRepository;
+        _cacheService = cacheService;
     }
 
     [HttpGet]
@@ -23,7 +26,20 @@ public class GamesController : ControllerBase
     {
         try
         {
-            return Ok(_gameRepository.GetAll());
+            var gameListKey = "gameList";
+            
+            var cachedGameList = _cacheService.Get(gameListKey);
+
+            if (cachedGameList != null)
+            {
+                return Ok(cachedGameList);
+            }
+            
+            var gameList = _gameRepository.GetAll();
+            
+            _cacheService.Set(gameListKey, gameList);
+            
+            return Ok(gameList);
         }
         catch (Exception e)
         {
@@ -37,7 +53,20 @@ public class GamesController : ControllerBase
     {
         try
         {
-            return Ok(_gameRepository.GetById(id));
+            var gameKey = $"game-{id}";
+            
+            var cachedGame = _cacheService.Get(gameKey);
+            
+            if (cachedGame != null)
+            {
+                return Ok(cachedGame);
+            }
+
+            var game = _gameRepository.GetById(id);
+            
+            _cacheService.Set(gameKey, game);
+            
+            return Ok(game);
         }
         catch (Exception e)
         {
