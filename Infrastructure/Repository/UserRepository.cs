@@ -27,4 +27,19 @@ public class UserRepository : EfRepository<User>, IUserRepository
         
         return user;
     }
+
+    public User? GetUserByEmail(string email)
+    {
+        var user = _dbSet.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+
+        return user;
+
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        var user = _dbSet.FirstOrDefault(u=>u.Name.ToLower() == username.ToLower());
+        
+        return user;
+    }
 }
