@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Core;
+using Core.Dtos;
 using Core.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -22,26 +23,17 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Login([FromBody] string username, string password)
+    public IActionResult Login([FromBody] LoginDto loginDto)
     {
+        var user = _userRepository.GetUserByUsername(loginDto.Name);
+        
+        if(user == null) return BadRequest("username not found");
+        
+        if(user.Password != loginDto.Password) return Unauthorized();
         
         
-        
-        
-        if (username == "admin" && password == "admin")
-        {
-            var token = GenerateToken(username, PermissionType.Admin);
-            return Ok(new {token});
-        }
-        else if (username == "user" && password == "user")
-        {
-            var token = GenerateToken(username, PermissionType.User);
-            return Ok(new {token});
-        }
-        else
-        {
-            return Unauthorized();
-        }
+        var token = GenerateToken(user.Name, Enum.Parse<PermissionType>(user.Permission));
+        return Ok(new {token});
     }
 
     private string GenerateToken(string username, PermissionType role)

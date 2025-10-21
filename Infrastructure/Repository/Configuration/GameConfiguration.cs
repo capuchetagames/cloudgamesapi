@@ -14,7 +14,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.Property(x => x.Name).HasColumnType("VARCHAR(100)").IsRequired();
         builder.Property(x => x.Category).HasColumnType("VARCHAR(100)").IsRequired();
         builder.Property(x => x.Active).HasColumnType("BIT").IsRequired();
-        builder.Property(x => x.Price).HasColumnType("DECIMAL").IsRequired();
+        builder.Property(x => x.Price).HasColumnType("DECIMAL(7,4)").IsRequired();
         builder.Property(x=> x.CreatedAt).HasColumnType("DATETIME").IsRequired();
     }
 }

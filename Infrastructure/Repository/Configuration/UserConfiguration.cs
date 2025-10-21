@@ -14,7 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Name).HasColumnType("VARCHAR(100)").IsRequired();
         builder.Property(x=>x.Email).HasColumnType("VARCHAR(100)").IsRequired();
         builder.Property(x => x.Password).HasColumnType("VARCHAR(100)").IsRequired();
-        builder.Property(x=>x.Permission).HasColumnType("VARCHAR(100)").IsRequired();
+        builder.Property(x=>x.Permission).HasColumnType("VARCHAR(10)").IsRequired();
         builder.Property(x => x.CreatedAt).HasColumnType("DATETIME").IsRequired();
     }
 }
