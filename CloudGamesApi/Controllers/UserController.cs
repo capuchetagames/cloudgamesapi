@@ -70,7 +70,7 @@ public class UserController : ControllerBase
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
-                Permission = userDto.Permission.ToLower(),
+                Permission = userDto.Permission.ToString(),
             };
             _userRepository.Add(user);
             return Ok();

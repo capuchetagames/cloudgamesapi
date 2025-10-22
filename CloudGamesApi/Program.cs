@@ -1,6 +1,7 @@
 using System.Text;
 using CloudGamesApi.Middlewares;
 using CloudGamesApi.Service;
+using CloudGamesApi.Service.Validator;
 using Core;
 using Core.Models;
 using Core.Repository;
@@ -8,6 +9,7 @@ using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,8 @@ builder.Services.AddTransient<ICacheService, MemCacheService>();
 
 
 builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerDocumentation();
