@@ -45,7 +45,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("DECIMAL(7,4)");
 
                     b.HasKey("Id");
 
@@ -103,7 +103,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Permission")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(100)");
+                        .HasColumnType("VARCHAR(10)");
 
                     b.HasKey("Id");
 

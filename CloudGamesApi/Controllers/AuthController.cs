@@ -4,6 +4,7 @@ using System.Text;
 using Core;
 using Core.Dtos;
 using Core.Repository;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,16 +16,27 @@ public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly IUserRepository _userRepository;
+    
+    private IValidator<LoginDto>  _loginDtoValidator;
 
-    public AuthController(IConfiguration configuration, IUserRepository  userRepository)
+    public AuthController(IConfiguration configuration, IUserRepository  userRepository, IValidator<LoginDto> loginDtoValidator)
     {
         _configuration = configuration;
         _userRepository =  userRepository;
+        _loginDtoValidator =  loginDtoValidator;
     }
 
     [HttpPost]
-    public IActionResult Login([FromBody] LoginDto loginDto)
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
+        var validationResult = await _loginDtoValidator.ValidateAsync(loginDto);
+        
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.ToDictionary()); 
+        }
+        
+        
         var user = _userRepository.GetUserByUsername(loginDto.Name);
         
         if(user == null) return BadRequest("username not found");
@@ -32,7 +44,7 @@ public class AuthController : ControllerBase
         if(user.Password != loginDto.Password) return Unauthorized();
         
         
-        var token = GenerateToken(user.Name, Enum.Parse<PermissionType>(user.Permission));
+        var token = GenerateToken(user.Name, user.Permission);
         return Ok(new {token});
     }
 

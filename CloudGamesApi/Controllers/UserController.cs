@@ -2,6 +2,7 @@ using Core;
 using Core.Dtos;
 using Core.Entity;
 using Core.Repository;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,9 +14,12 @@ public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
     
-    public UserController(IUserRepository userRepository)
+    private IValidator<BaseUserDto> _validator;
+    
+    public UserController(IUserRepository userRepository, IValidator<BaseUserDto>  validator)
     {
         _userRepository = userRepository;
+        _validator = validator;
     }
     
     [HttpGet] 
@@ -47,6 +51,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id:int}/games")]
+    [Authorize]
     public IActionResult GetGames([FromRoute] int id)
     {
         try
@@ -65,12 +70,47 @@ public class UserController : ControllerBase
     {
         try
         {
+            var validationResult =  _validator.Validate(userDto);
+        
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToDictionary()); 
+            }
+            
             var user = new User()
             {
                 Name = userDto.Name,
                 Email = userDto.Email,
                 Password = userDto.Password,
-                Permission = userDto.Permission.ToString(),
+                Permission = userDto.Permission,
+            };
+            _userRepository.Add(user);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+    
+    [HttpPost("/new-user")]
+    public IActionResult PostNewUser([FromBody] BaseUserDto userDto)
+    {
+        try
+        {
+            var validationResult =  _validator.Validate(userDto);
+        
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToDictionary()); 
+            }
+            
+            var user = new User()
+            {
+                Name = userDto.Name,
+                Email = userDto.Email,
+                Password = userDto.Password,
+                Permission = PermissionType.User,
             };
             _userRepository.Add(user);
             return Ok();
@@ -87,6 +127,13 @@ public class UserController : ControllerBase
     {
         try
         {
+            var validationResult =  _validator.Validate(userDto);
+        
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToDictionary()); 
+            }
+            
             var user = _userRepository.GetById(userDto.Id);
             user.Name = userDto.Name;
             user.Email = userDto.Email;
