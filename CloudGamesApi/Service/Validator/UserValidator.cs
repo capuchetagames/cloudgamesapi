@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace CloudGamesApi.Service.Validator;
 
-public class UserValidator : AbstractValidator<UserDto>
+public class UserValidator : AbstractValidator<BaseUserDto>
 {
     public UserValidator()
     {
@@ -22,9 +22,9 @@ public class UserValidator : AbstractValidator<UserDto>
         RuleFor(user => user.ConfirmPassword)
             .Equal(user => user.Password).WithMessage("A confirmação de Senha não confere.");
         
-        RuleFor(user => user.Permission)
-            .NotEmpty().WithMessage("O Tipo de usuário é Obrigatório.")
-            .IsInEnum().WithMessage("Defina o tipo de usuário.");
+        // RuleFor(user => user.Permission)
+        //     .NotEmpty().WithMessage("O Tipo de usuário é Obrigatório.")
+        //     .IsInEnum().WithMessage("Defina o tipo de usuário.");
     }
     
 }
