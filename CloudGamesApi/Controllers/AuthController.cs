@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CloudGamesApi.Service;
 using Core;
 using Core.Dtos;
 using Core.Repository;
@@ -19,11 +20,15 @@ public class AuthController : ControllerBase
     
     private IValidator<LoginDto>  _loginDtoValidator;
 
-    public AuthController(IConfiguration configuration, IUserRepository  userRepository, IValidator<LoginDto> loginDtoValidator)
+    private BaseLogger<AuthController> _logger;
+
+    public AuthController(IConfiguration configuration, IUserRepository  userRepository,
+        IValidator<LoginDto> loginDtoValidator, BaseLogger<AuthController> logger)
     {
         _configuration = configuration;
         _userRepository =  userRepository;
         _loginDtoValidator =  loginDtoValidator;
+        _logger =  logger;
     }
 
     [HttpPost]
@@ -36,6 +41,7 @@ public class AuthController : ControllerBase
             return BadRequest(validationResult.ToDictionary()); 
         }
         
+        _logger.LogInformation("Login request received");
         
         var user = _userRepository.GetUserByUsername(loginDto.Name);
         
