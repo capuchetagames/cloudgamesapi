@@ -1,15 +1,11 @@
-using System.Text;
 using CloudGamesApi.Middlewares;
 using CloudGamesApi.Service;
 using CloudGamesApi.Service.Validator;
-using Core;
 using Core.Models;
 using Core.Repository;
-using Infrastructure.Repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
+using Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +25,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<ICacheService, MemCacheService>();
 
+builder.Services.AddTransient<ICorrelationIdService, CorrelationIdService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
@@ -38,31 +36,10 @@ builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerDocumentation();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+builder.Services.AddTransient(typeof(BaseLogger<>));
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(nameof(PermissionType.Admin), policy => policy.RequireRole(nameof(PermissionType.Admin)));
-});
-
-builder.Services.AddControllers();
+builder.AddJwtAuthentication();
+builder.Services.AddPolicyAuthorization();
 
 var app = builder.Build();
 
