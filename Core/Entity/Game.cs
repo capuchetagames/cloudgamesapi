@@ -7,5 +7,5 @@ public class Game : EntityBase
     public bool Active { get; set; }
     public decimal Price { get; set; }
     
-    public ICollection<Order> Orders { get; set; }
+    public virtual ICollection<Order> Orders { get; set; }
 }

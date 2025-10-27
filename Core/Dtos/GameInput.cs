@@ -1,8 +1,7 @@
 namespace Core.Dtos;
 
-public class UpdateGameDto
+public class GameInput
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string Category { get; set; }
     public bool Active { get; set; }

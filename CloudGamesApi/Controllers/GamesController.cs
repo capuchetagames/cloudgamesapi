@@ -76,16 +76,16 @@ public class GamesController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = nameof(PermissionType.Admin))]
-    public IActionResult Post([FromBody] GameDto gameDto)
+    public IActionResult Post([FromBody] GameInput gameInput)
     {
         try
         {
             var game = new Game()
             {
-                Name = gameDto.Name,
-                Category = gameDto.Category,
-                Active = gameDto.Active,
-                Price = gameDto.Price,
+                Name = gameInput.Name,
+                Category = gameInput.Category,
+                Active = gameInput.Active,
+                Price = gameInput.Price,
             };
             _gameRepository.Add(game);
             return Ok();
@@ -98,15 +98,15 @@ public class GamesController : ControllerBase
 
     [HttpPut]
     [Authorize(Policy = nameof(PermissionType.Admin))]
-    public IActionResult Put([FromBody] UpdateGameDto gameDto)
+    public IActionResult Put([FromBody] UpdateGameInput gameInput)
     {
         try
         {
-            var game = _gameRepository.GetById(gameDto.Id);
-            game.Name = gameDto.Name;
-            game.Category = gameDto.Category;
-            game.Active = gameDto.Active;
-            game.Price = gameDto.Price;
+            var game = _gameRepository.GetById(gameInput.Id);
+            game.Name = gameInput.Name;
+            game.Category = gameInput.Category;
+            game.Active = gameInput.Active;
+            game.Price = gameInput.Price;
             _gameRepository.Update(game);
             return Ok();
         }

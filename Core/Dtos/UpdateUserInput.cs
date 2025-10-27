@@ -1,6 +1,6 @@
 namespace Core.Dtos;
 
-public class UpdateUserDto :UserDto
+public class UpdateUserInput :UserInput
 {
     public int Id { get; set; }
 }

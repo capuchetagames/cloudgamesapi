@@ -66,11 +66,11 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = nameof(PermissionType.Admin))]
-    public IActionResult Post([FromBody] UserDto userDto)
+    public IActionResult Post([FromBody] UserInput userInput)
     {
         try
         {
-            var validationResult =  _validator.Validate(userDto);
+            var validationResult =  _validator.Validate(userInput);
         
             if (!validationResult.IsValid)
             {
@@ -79,10 +79,10 @@ public class UserController : ControllerBase
             
             var user = new User()
             {
-                Name = userDto.Name,
-                Email = userDto.Email,
-                Password = userDto.Password,
-                Permission = userDto.Permission,
+                Name = userInput.Name,
+                Email = userInput.Email,
+                Password = userInput.Password,
+                Permission = userInput.Permission,
             };
             _userRepository.Add(user);
             return Ok();
@@ -123,22 +123,22 @@ public class UserController : ControllerBase
 
     [HttpPut]
     [Authorize(Policy = nameof(PermissionType.Admin))]
-    public IActionResult Put([FromBody] UpdateUserDto userDto)
+    public IActionResult Put([FromBody] UpdateUserInput userInput)
     {
         try
         {
-            var validationResult =  _validator.Validate(userDto);
+            var validationResult =  _validator.Validate(userInput);
         
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.ToDictionary()); 
             }
             
-            var user = _userRepository.GetById(userDto.Id);
-            user.Name = userDto.Name;
-            user.Email = userDto.Email;
-            user.Password = userDto.Password;
-            user.Permission = userDto.Permission;
+            var user = _userRepository.GetById(userInput.Id);
+            user.Name = userInput.Name;
+            user.Email = userInput.Email;
+            user.Password = userInput.Password;
+            user.Permission = userInput.Permission;
             
             _userRepository.Update(user);
             return Ok();
