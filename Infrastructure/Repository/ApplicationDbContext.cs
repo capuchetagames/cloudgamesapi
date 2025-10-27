@@ -35,6 +35,7 @@ public class ApplicationDbContext : DbContext
         if(optionsBuilder.IsConfigured) return;
 
         optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
+        optionsBuilder.UseLazyLoadingProxies();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

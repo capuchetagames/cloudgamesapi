@@ -17,10 +17,12 @@ var connectionString = configuration.GetConnectionString("ConnectionString");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.UseLazyLoadingProxies();
 },ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<ICacheService, MemCacheService>();
@@ -51,8 +53,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseLogMiddleware();
 
 app.UseAuthorization();
 

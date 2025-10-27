@@ -1,6 +1,6 @@
+using Core.Dtos;
 using Core.Entity;
 using Core.Repository;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository;
 
@@ -9,23 +9,40 @@ public class UserRepository : EfRepository<User>, IUserRepository
     public UserRepository(ApplicationDbContext context) : base(context)
     {
     }
-    public User GetUserGames(int id)
+    public UserDto GetUserGames(int id)
     {
-        var user = _dbSet.Include(u=>u.Orders)
-            .ThenInclude(g=>g.Game)
-            .FirstOrDefault(u=>u.Id == id) ?? throw new Exception("User not found");
+        var user = _dbSet.FirstOrDefault(u => u.Id == id) ?? throw new Exception("User not found");
         
         
+        var userDto = new UserDto()
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            CreatedAt = user.CreatedAt,
+            Orders = user.Orders.Where(o => o.UserId == user.Id)
+                .Select(o => new OrderDto()
+                {
+                    
+                    Id = o.Id,
+                    CreatedAt = o.CreatedAt,
+                    UserId = o.UserId,
+                    GameId = o.GameId,
+                    Game = new GameDto()
+                    {
+                        Id = o.Game.Id,
+                        CreatedAt = o.Game.CreatedAt,
+                        Active = o.Game.Active,
+                        Category = o.Game.Category,
+                        Name = o.Game.Name,
+                        Price = o.Game.Price,
         
-        user.Orders = user.Orders.Where(o=>o.UserId == id)
-            .Select(o =>
-            {
-                o.User = null;
-                o.Game.Orders = null;
-                return o;
-            }).ToList();
+                    }
+                }).ToList()
+        };
         
-        return user;
+        
+        return userDto;
     }
 
     public User? GetUserByEmail(string email)
