@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using CloudGamesApi.Configs;
 using CloudGamesApi.Middlewares;
 using CloudGamesApi.Service;
 using CloudGamesApi.Service.Validator;
@@ -13,6 +15,9 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json").Build();
 
 var connectionString = configuration.GetConnectionString("ConnectionString");
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -35,8 +40,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerDocumentation();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerDocumentation();
 
 builder.Services.AddTransient(typeof(BaseLogger<>));
 
@@ -50,6 +54,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    app.UseReDoc(c =>
+    {
+        c.DocumentTitle = "REDOC API Documentation";
+        c.SpecUrl = "/swagger/v1/swagger.json";
+    });
 }
 
 app.UseHttpsRedirection();

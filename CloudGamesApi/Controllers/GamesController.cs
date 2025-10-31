@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CloudGamesApi.Controllers;
 
+/// <summary>
+/// Gerencia as operações CRUD para os jogos da plataforma.
+/// </summary>
 [ApiController]
 [Route("/[controller]")]
 public class GamesController : ControllerBase
@@ -20,6 +23,15 @@ public class GamesController : ControllerBase
         _cacheService = cacheService;
     }
 
+    /// <summary>
+    /// Lista todos os jogos cadastrados.
+    /// </summary>
+    /// <remarks>
+    /// Este endpoint retorna uma lista de todos os jogos.<br/>
+    /// Os resultados são cacheados para melhorar a performance.<br/>
+    /// Requer autenticação.
+    /// </remarks>
+    /// <returns>Uma lista de jogos.</returns>
     [HttpGet]
     [Authorize]
     public IActionResult Get()
@@ -47,6 +59,15 @@ public class GamesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Busca um jogo específico pelo seu ID.
+    /// </summary>
+    /// <param name="id">O ID (int) do jogo a ser buscado.</param>
+    /// <remarks>
+    /// Os resultados são cacheados individualmente.<br/>
+    /// Requer autenticação.
+    /// </remarks>
+    /// <returns>O objeto do jogo correspondente ao ID.</returns>
     [HttpGet("{id:int}")]
     [Authorize]
     public IActionResult Get([FromRoute] int id)
@@ -64,6 +85,11 @@ public class GamesController : ControllerBase
 
             var game = _gameRepository.GetById(id);
             
+            if (game == null)
+            {
+                return NotFound(new { message = $"Jogo com ID {id} não encontrado." });
+            }
+            
             _cacheService.Set(gameKey, game);
             
             return Ok(game);
@@ -74,8 +100,17 @@ public class GamesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Cria um novo jogo.
+    /// </summary>
+    /// <remarks>
+    /// Apenas usuários com a política 'Admin' podem criar jogos.
+    /// </remarks>
+    /// <param name="gameInput">Os dados do novo jogo a ser criado.</param>
+    /// <returns>O jogo recém-criado.</returns>
     [HttpPost]
     [Authorize(Policy = nameof(PermissionType.Admin))]
+    [Consumes("application/json")]
     public IActionResult Post([FromBody] GameInput gameInput)
     {
         try
@@ -88,7 +123,8 @@ public class GamesController : ControllerBase
                 Price = gameInput.Price,
             };
             _gameRepository.Add(game);
-            return Ok();
+            
+            return CreatedAtAction(nameof(Get), new { id = game.Id }, game);
         }
         catch (Exception e)
         {
@@ -96,6 +132,14 @@ public class GamesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Atualiza um jogo existente.
+    /// </summary>
+    /// <remarks>
+    /// Apenas usuários com a política 'Admin' podem atualizar jogos.
+    /// </remarks>
+    /// <param name="gameInput">Os dados do jogo a ser atualizado.<br/> O ID é obrigatório.</param>
+    /// <returns>Nenhum conteúdo em caso de sucesso.</returns>
     [HttpPut]
     [Authorize(Policy = nameof(PermissionType.Admin))]
     public IActionResult Put([FromBody] UpdateGameInput gameInput)
@@ -103,31 +147,58 @@ public class GamesController : ControllerBase
         try
         {
             var game = _gameRepository.GetById(gameInput.Id);
+            
+            if (game == null)
+            {
+                return NotFound(new { message = $"Jogo com ID {gameInput.Id} não encontrado." });
+            }
+            
             game.Name = gameInput.Name;
             game.Category = gameInput.Category;
             game.Active = gameInput.Active;
             game.Price = gameInput.Price;
+            
             _gameRepository.Update(game);
-            return Ok();
+            
+            return NoContent();
         }
         catch (Exception e)
         {
             return BadRequest(e);
         }
     }
-
+    
+    /// <summary>
+    /// Deleta um jogo pelo ID.
+    /// </summary>
+    /// <remarks>
+    /// Apenas usuários com a política 'Admin' podem deletar jogos.
+    /// </remarks>
+    /// <param name="id">O ID (int) do jogo a ser deletado.</param>
+    /// <returns>Nenhum conteúdo em caso de sucesso.</returns>
     [HttpDelete("{id:int}")]
     [Authorize(Policy = nameof(PermissionType.Admin))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult Delete([FromRoute] int id)
     {
         try
         {
+            var game = _gameRepository.GetById(id);
+            if (game == null)
+            {
+                return NotFound(new { message = $"Jogo com ID {id} não encontrado." });
+            }
+            
             _gameRepository.Delete(id);
-            return Ok();
+            return NoContent();
         }
         catch (Exception e)
         {
-            return BadRequest(e);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Ocorreu um erro interno.", error = e.Message });
         }
     }
     
