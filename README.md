@@ -14,21 +14,21 @@ O projeto segue os princípios de **Clean Architecture**, organizado em três ca
 
 ```
 cloudgamesapi/
-├── CloudGamesApi/          # Camada de Apresentação (API)
-│   ├── Controllers/        # Controladores da API
-│   ├── Configs/           # Configurações (Swagger, etc)
+├── CloudGamesApi/         # Camada de Apresentação (API)
+│   ├── Controllers/       # Controladores da API
+│   ├── Configs/           # Configurações
 │   ├── Middlewares/       # Middlewares customizados
 │   ├── Service/           # Serviços e validadores
 │   └── Program.cs         # Ponto de entrada da aplicação
 ├── Core/                  # Camada de Domínio
-│   ├── Entity/           # Entidades do domínio
-│   ├── Dtos/             # Data Transfer Objects
-│   ├── Repository/       # Interfaces de repositórios
-│   └── Models/           # Interfaces (ICacheService, ICorrelationIdService)
+│   ├── Entity/            # Entidades do domínio
+│   ├── Dtos/              # Data Transfer Objects
+│   ├── Repository/        # Interfaces de repositórios
+│   └── Models/            # Interfaces
 ├── Infrastructure/        # Camada de Infraestrutura
-│   ├── Repository/       # Implementação dos repositórios
-│   └── Migrations/       # Migrações do Entity Framework
-└── CloudGamesApi.Tests/  # Testes unitários
+│   ├── Repository/        # Implementação dos repositórios
+│   └── Migrations/        # Migrações do Entity Framework
+└── CloudGamesApi.Tests/   # Testes unitários
 ```
 
 ## 🚀 Tecnologias Utilizadas
@@ -40,11 +40,11 @@ cloudgamesapi/
 
 ### Banco de Dados
 - **Entity Framework Core 9.0** - ORM
-- **MySQL/MariaDB** - Banco de dados relacional
+- **MySQL** - Banco de dados relacional
 - **Pomelo.EntityFrameworkCore.MySql** - Provider MySQL para EF Core
 
 ### Segurança e Autenticação
-- **JWT (JSON Web Tokens)** - Autenticação stateless
+- **JWT (JSON Web Tokens)** - Autenticação
 - **ASP.NET Core Identity (PasswordHasher)** - Hash seguro de senhas
 - **Microsoft.AspNetCore.Authentication.JwtBearer** - Middleware de autenticação JWT
 
@@ -61,7 +61,7 @@ cloudgamesapi/
 Antes de executar o projeto, certifique-se de ter instalado:
 
 - [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) ou superior
-- [MySQL](https://www.mysql.com/downloads/) ou [MariaDB](https://mariadb.org/download/)
+- [MySQL](https://www.mysql.com/downloads/)
 - IDE recomendada: [Visual Studio 2022](https://visualstudio.microsoft.com/), [Visual Studio Code](https://code.visualstudio.com/) ou [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 ## ⚙️ Configuração
@@ -134,7 +134,7 @@ A API estará disponível em:
 Após iniciar a aplicação em modo desenvolvimento:
 
 - **Swagger UI**: `https://localhost:7000/swagger`
-- **ReDoc**: `https://localhost:7000/api-docs` (se configurado)
+- **ReDoc**: `https://localhost:7000/api-docs`
 
 ## 📚 Entidades do Domínio
 
@@ -192,15 +192,15 @@ A API utiliza **JWT (JSON Web Tokens)** para autenticação.
 
 ### Users
 
-| Método | Endpoint | Descrição | Autenticação |
-|--------|----------|-----------|--------------|
-| GET | `/User` | Lista todos os usuários | Admin |
-| GET | `/User/{id}` | Busca usuário por ID | Admin |
-| GET | `/User/{id}/games` | Lista pedidos com jogos do usuário | Autenticado |
+| Método | Endpoint | Descrição                   | Autenticação |
+|--------|----------|-----------------------------|--------------|
+| GET | `/User` | Lista todos os usuários     | Admin |
+| GET | `/User/{id}` | Busca usuário por ID        | Admin |
+| GET | `/User/{id}/games` | Lista os jogos do usuário   | Autenticado |
 | POST | `/new-user` | Registra novo usuário (role User) | Pública |
 | POST | `/User` | Cria usuário com role específica | Admin |
-| PUT | `/User` | Atualiza usuário | Admin |
-| DELETE | `/User/{id}` | Deleta usuário | Admin |
+| PUT | `/User` | Atualiza usuário            | Admin |
+| DELETE | `/User/{id}` | Deleta usuário              | Admin |
 
 ### Games
 
@@ -277,72 +277,6 @@ dotnet test /p:CollectCoverage=true
 - Tokens JWT com expiração de 30 minutos
 - Autorização baseada em políticas (Policy-based)
 - Proteção contra ataques comuns
-
-## 📝 Configurações Adicionais
-
-### CORS (Cross-Origin Resource Sharing)
-
-Para habilitar CORS, adicione no `Program.cs`:
-
-```csharp
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());
-});
-
-app.UseCors("AllowAll");
-```
-
-### Variáveis de Ambiente
-
-Recomenda-se usar variáveis de ambiente para configurações sensíveis:
-
-```bash
-export ConnectionStrings__ConnectionString="server=localhost;database=cloudgames;user=root;password=senha"
-export Jwt__Key="sua_chave_secreta"
-export Jwt__Issuer="CloudGamesApi"
-```
-
-## 🚀 Deploy
-
-### Build para Produção
-
-```bash
-dotnet publish -c Release -o ./publish
-```
-
-### Docker (Exemplo)
-
-Crie um `Dockerfile`:
-
-```dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY ["CloudGamesApi/CloudGamesApi.csproj", "CloudGamesApi/"]
-COPY ["Core/Core.csproj", "Core/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-RUN dotnet restore "CloudGamesApi/CloudGamesApi.csproj"
-COPY . .
-WORKDIR "/src/CloudGamesApi"
-RUN dotnet build "CloudGamesApi.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "CloudGamesApi.csproj" -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "CloudGamesApi.dll"]
-```
 
 ## 🤝 Contribuindo
 
