@@ -3,10 +3,12 @@ using CloudGamesApi.Configs;
 using CloudGamesApi.Middlewares;
 using CloudGamesApi.Service;
 using CloudGamesApi.Service.Validator;
+using Core.Entity;
 using Core.Models;
 using Core.Repository;
 using FluentValidation;
 using Infrastructure.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddTransient<ICacheService, MemCacheService>();

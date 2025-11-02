@@ -4,9 +4,11 @@ using System.Text;
 using CloudGamesApi.Service;
 using Core;
 using Core.Dtos;
+using Core.Entity;
 using Core.Repository;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -25,14 +27,17 @@ public class AuthController : ControllerBase
     private IValidator<LoginDto>  _loginDtoValidator;
 
     private BaseLogger<AuthController> _logger;
+    
+    private readonly IPasswordHasher<User> _passwordHasher;
 
     public AuthController(IConfiguration configuration, IUserRepository  userRepository,
-        IValidator<LoginDto> loginDtoValidator, BaseLogger<AuthController> logger)
+        IValidator<LoginDto> loginDtoValidator, BaseLogger<AuthController> logger, IPasswordHasher<User> passwordHasher)
     {
         _configuration = configuration;
         _userRepository =  userRepository;
         _loginDtoValidator =  loginDtoValidator;
         _logger =  logger;
+        _passwordHasher = passwordHasher;
     }
 
     /// <summary>
@@ -40,7 +45,7 @@ public class AuthController : ControllerBase
     /// </summary>
     /// <remarks>
     /// Este endpoint valida as credenciais do usuário.<br/>
-    /// Em caso de sucesso, gera um token JWT com validade de 30 minutos,
+    /// Em caso de sucesso, gera um token JWT com validade de 30 minutos,<br/>
     /// contendo as claims 'sub' (username) e 'role' (permissão).
     /// </remarks>
     /// <param name="loginDto">Objeto contendo o 'Name' (username) e 'Password'.</param>
@@ -67,11 +72,28 @@ public class AuthController : ControllerBase
         
             var user = _userRepository.GetUserByUsername(loginDto.Name);
         
-            if(user == null || user.Password != loginDto.Password)
+            if(user == null)
             {
-                _logger.LogWarning($"Falha na autenticação: {loginDto.Name}. Usuário ou senha inválidos.");
+                _logger.LogWarning($"Falha na autenticação: {loginDto.Name}. Usuário não encontrado.");
                 return Unauthorized(new { message = "Usuário ou senha inválidos." });
             }
+            
+            var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
+            
+            if (verificationResult == PasswordVerificationResult.Failed)
+            {
+                _logger.LogWarning($"Falha na autenticação: {loginDto.Name}. Senha inválida.");
+                return Unauthorized(new { message = "Usuário ou senha inválidos." });
+            }
+            
+            if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+            {
+                _logger.LogInformation($"Usuário {loginDto.Name} autenticado. Atualizando hash de senha para novo padrão.");
+                // Atualiza o hash no banco com o novo padrão, de forma transparente
+                user.Password = _passwordHasher.HashPassword(user, loginDto.Password);
+                _userRepository.Update(user); // Salva o novo hash
+            }
+            
         
             _logger.LogInformation($"Usuário {loginDto.Name} autenticado com sucesso.");
         
