@@ -24,7 +24,7 @@ cloudgamesapi/
 │   ├── Entity/           # Entidades do domínio
 │   ├── Dtos/             # Data Transfer Objects
 │   ├── Repository/       # Interfaces de repositórios
-│   └── Models/           # Interfaces de serviços
+│   └── Models/           # Interfaces (ICacheService, ICorrelationIdService)
 ├── Infrastructure/        # Camada de Infraestrutura
 │   ├── Repository/       # Implementação dos repositórios
 │   └── Migrations/       # Migrações do Entity Framework
@@ -196,7 +196,7 @@ A API utiliza **JWT (JSON Web Tokens)** para autenticação.
 |--------|----------|-----------|--------------|
 | GET | `/User` | Lista todos os usuários | Admin |
 | GET | `/User/{id}` | Busca usuário por ID | Admin |
-| GET | `/User/{id}/games` | Lista jogos do usuário | Autenticado |
+| GET | `/User/{id}/games` | Lista pedidos com jogos do usuário | Autenticado |
 | POST | `/new-user` | Registra novo usuário (role User) | Pública |
 | POST | `/User` | Cria usuário com role específica | Admin |
 | PUT | `/User` | Atualiza usuário | Admin |
