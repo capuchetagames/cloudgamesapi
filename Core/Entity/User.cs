@@ -1,5 +1,8 @@
 namespace Core.Entity;
 
+/// <summary>
+/// Representa um usuário no banco de dados.
+/// </summary>
 public class User : EntityBase
 {
     public required string Name  { get; set; }
