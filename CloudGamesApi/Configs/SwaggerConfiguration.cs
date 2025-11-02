@@ -14,6 +14,13 @@ public static class SwaggerConfiguration
                 Title = "CloudGamesApi",
                 Version = "v1",
                 Description = "Api para login de usuários e cadastro de jogos",
+                Contact = new Microsoft.OpenApi.Models.OpenApiContact()
+                {
+                    Name = "Diogo Carlomagno / Alan Silva",
+                    Email = "diogocarlomagno@gmail.com;alanfs1010@gmail.com",
+                    //Url = new Uri("https://google.com/")
+
+                },
             });
             
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
