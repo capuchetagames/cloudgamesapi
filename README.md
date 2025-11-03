@@ -6,6 +6,8 @@ API RESTful para gerenciamento de uma plataforma de jogos em nuvem, desenvolvida
 
 A Cloud Games API é uma aplicação backend completa para gerenciar usuários, jogos e pedidos em uma plataforma de jogos em nuvem. O projeto implementa autenticação JWT, autorização baseada em roles, validação de dados e cache em memória para otimização de performance.
 
+Este projeto é parte integrante da **Post Tech da FIAP**.
+
 ## 🏗️ Arquitetura
 
 O projeto segue os princípios de **Clean Architecture**, organizado em três camadas principais:
@@ -278,28 +280,9 @@ dotnet test /p:CollectCoverage=true
 - Autorização baseada em políticas (Policy-based)
 - Proteção contra ataques comuns
 
-## 🤝 Contribuindo
+## 🧑‍💻 Autores
 
-1. Faça um Fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto é parte do curso FIAP Cloud Games.
-
-## 👥 Autores
-
-Desenvolvido pela equipe FIAP Cloud Games.
-
-## 📞 Suporte
-
-Para suporte e dúvidas:
-- Abra uma issue no GitHub
-- Entre em contato através do repositório
+- Alan Silva - [GitHub](https://github.com/AlanSilvaProg)
+- Diogo Carlomagno - [GitHub](https://github.com/diogocarlomagno)
 
 ---
-
-**Desenvolvido com ❤️ usando .NET 8.0 e Clean Architecture**
