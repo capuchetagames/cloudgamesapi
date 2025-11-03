@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using CloudGamesApi.Service;
 using Core;
 using Core.Dtos;
 using Core.Entity;
+using Core.Models;
 using Core.Repository;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -26,12 +26,12 @@ public class AuthController : ControllerBase
     
     private IValidator<LoginDto>  _loginDtoValidator;
 
-    private BaseLogger<AuthController> _logger;
+    private IBaseLogger<AuthController> _logger;
     
     private readonly IPasswordHasher<User> _passwordHasher;
 
     public AuthController(IConfiguration configuration, IUserRepository  userRepository,
-        IValidator<LoginDto> loginDtoValidator, BaseLogger<AuthController> logger, IPasswordHasher<User> passwordHasher)
+        IValidator<LoginDto> loginDtoValidator, IBaseLogger<AuthController> logger, IPasswordHasher<User> passwordHasher)
     {
         _configuration = configuration;
         _userRepository =  userRepository;
@@ -94,13 +94,14 @@ public class AuthController : ControllerBase
                 _userRepository.Update(user); // Salva o novo hash
             }
             
-        
             _logger.LogInformation($"Usuário {loginDto.Name} autenticado com sucesso.");
         
         
             var token = GenerateToken(user.Name, user.Permission);
+
+            var loginResponse = new LoginResponseDto { Token = token };
             
-            return Ok(new LoginResponseDto { Token = token });
+            return Ok(loginResponse);
 
         }
         catch (Exception e)

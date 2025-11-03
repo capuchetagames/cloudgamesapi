@@ -45,7 +45,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocumentation();
 
-builder.Services.AddTransient(typeof(BaseLogger<>));
+builder.Services.AddScoped(typeof(IBaseLogger<>), typeof(BaseLogger<>));
 
 builder.AddJwtAuthentication();
 builder.Services.AddPolicyAuthorization();

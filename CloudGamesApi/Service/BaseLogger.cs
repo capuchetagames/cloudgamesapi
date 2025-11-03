@@ -2,7 +2,7 @@ using Core.Models;
 
 namespace CloudGamesApi.Service;
 
-public class BaseLogger<T>
+public class BaseLogger<T> :  IBaseLogger<T>
 {
     private readonly ILogger<T> _logger;
     private ICorrelationIdService _correlationIdService;
