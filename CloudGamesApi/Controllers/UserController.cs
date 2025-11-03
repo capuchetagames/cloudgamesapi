@@ -59,7 +59,7 @@ public class UserController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e);
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Erro interno", error = e.Message });
         }
     }
     

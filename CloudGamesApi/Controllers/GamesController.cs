@@ -34,6 +34,8 @@ public class GamesController : ControllerBase
     /// <returns>Uma lista de jogos.</returns>
     [HttpGet]
     [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<Game>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult Get()
     {
         try
@@ -55,7 +57,11 @@ public class GamesController : ControllerBase
         }
         catch (Exception e)
         {
-            return BadRequest(e);
+            return StatusCode(StatusCodes.Status500InternalServerError, new 
+            { 
+                message = "Ocorreu um erro interno ao buscar os jogos.",
+                error = e.Message
+            });
         }
     }
 
