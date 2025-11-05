@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251014115707_Initial")]
+    [Migration("20251104231817_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -21,6 +21,9 @@ namespace Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -48,7 +51,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("DECIMAL");
+                        .HasColumnType("DECIMAL(7,4)");
 
                     b.HasKey("Id");
 
@@ -106,7 +109,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Permission")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(100)");
+                        .HasColumnType("VARCHAR(10)");
 
                     b.HasKey("Id");
 

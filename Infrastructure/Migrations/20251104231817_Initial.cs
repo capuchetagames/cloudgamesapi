@@ -26,7 +26,7 @@ namespace Infrastructure.Migrations
                     Category = table.Column<string>(type: "VARCHAR(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Active = table.Column<ulong>(type: "BIT", nullable: false),
-                    Price = table.Column<decimal>(type: "DECIMAL(65,30)", nullable: false),
+                    Price = table.Column<decimal>(type: "DECIMAL(7,4)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
                 },
                 constraints: table =>
@@ -47,7 +47,7 @@ namespace Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Password = table.Column<string>(type: "VARCHAR(100)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Permission = table.Column<string>(type: "VARCHAR(100)", nullable: false)
+                    Permission = table.Column<string>(type: "VARCHAR(10)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "DATETIME", nullable: false)
                 },

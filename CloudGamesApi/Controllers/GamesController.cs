@@ -51,7 +51,7 @@ public class GamesController : ControllerBase
             
             var gameList = _gameRepository.GetAll();
             
-            _cacheService.Set(gameListKey, gameList);
+            if(gameList.Count>0) _cacheService.Set(gameListKey, gameList);
             
             return Ok(gameList);
         }
