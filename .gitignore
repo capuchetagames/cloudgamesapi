@@ -55,3 +55,7 @@ nunit-*.xml
 
 .DS_Store
 .idea/
+# Secrets / env files
+.env
+.env.*
+!.env.example
